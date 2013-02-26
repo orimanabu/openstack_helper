@@ -18,8 +18,7 @@ conn_info = {
 }
 
 def rdbms_open(service):
-    engine = sqlalchemy.create_engine("mysql://%s:%s@%s/%s"
-                % (conn_info[service]['user'], conn_info[service]['password'], conn_info[service]['host'], conn_info[service]['db']))
+    engine = sqlalchemy.create_engine("mysql://%s:%s@%s/%s" % (conn_info[service]['user'], conn_info[service]['password'], conn_info[service]['host'], conn_info[service]['db']))
     #engine.echo = True
     return engine
     
@@ -73,7 +72,7 @@ def port_setup():
     global Networks
     for row in res:
         elem = {
-                    "tenant": Tenants[row[0]] if row[0] else "",
+                    "tenant": Tenants[row[0]] if row[0] else "None",
                     "port_id": row[1],
                     "network_id": row[2],
                     "network_name": row[3],
@@ -103,8 +102,7 @@ def filter():
         line = re.sub(r"tap", "tap-", line)
         for port_id in Ports.keys():
             rx = port_id[0:11]
-            replace = "net:%s,ipaddr:%s,tenant:%s,owner:%s"
-                % (Ports[port_id]["network_name"], Ports[port_id]["ip_address"], Ports[port_id]["tenant"], Ports[port_id]["device_owner"])
+            replace = "net:%s,ipaddr:%s,tenant:%s,owner:%s" % (Ports[port_id]["network_name"], Ports[port_id]["ip_address"], Ports[port_id]["tenant"], Ports[port_id]["device_owner"])
             line = re.sub(rx, replace, line)
         print line,
 
