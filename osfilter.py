@@ -11,14 +11,14 @@ dbfile = "test.db"
 Tenants = {}
 Ports = {}
 
-conn_info = {
-    'keystone': {'user': 'keystone', 'password': 'keystone', 'host': 'localhost', 'db': 'keystone'},
-    'nova': {'user': 'nova', 'password': 'nova', 'host': 'localhost', 'db': 'nova'},
-    'quantum': {'user': 'quantum', 'password': 'quantum', 'host': 'localhost', 'db': 'ovs_quantum'}
+sql_connection = {
+    "keystone": "mysql://keystone:keystone@localhost/keystone",
+    "nova": "mysql://nova:nova@localhost/nova",
+    "quantum": "mysql://quantum:quantum@localhost/ovs_quantum",
 }
 
 def rdbms_open(service):
-    engine = sqlalchemy.create_engine("mysql://%s:%s@%s/%s" % (conn_info[service]['user'], conn_info[service]['password'], conn_info[service]['host'], conn_info[service]['db']))
+    engine = sqlalchemy.create_engine(sql_connection[service])
     #engine.echo = True
     return engine
     
