@@ -31,6 +31,11 @@ def rdbms_get_table(engine, table_name):
     table = sqlalchemy.Table(table_name, metadata, autoload=True)
     return table
 
+def table_get_tmp(table):
+    sql = sqlalchemy.sql.select([table])
+    res = sql.execute()
+    return [x for x in res]
+
 def table_get_columns(table):
     return [x for x in table.columns.keys()]
 
@@ -86,7 +91,7 @@ def port_setup():
     return dict
 
 def walk_all():
-    for service in conn_info.keys():
+    for service in sql_connection.keys():
         print "=>", service
         engine = rdbms_open(service)
         tables = rdbms_get_tables(engine)
@@ -95,7 +100,8 @@ def walk_all():
             table = rdbms_get_table(engine, table_name)
             array = table_get_columns(table)
             print array
-            print table_get_tmp(table)
+            #print table_get_tmp(table)
+            pprint(table_get_tmp(table))
 
 def filter():
     for line in sys.stdin:
