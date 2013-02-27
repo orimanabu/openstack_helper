@@ -112,7 +112,7 @@ With osfilter.py, the output of ovs-vsctl is converted clearer to some degree.
 
 You can use osfilter.py with any command other than ovs-vsctl, for example ip.
 
-	[root@folsom-controller openstack_helper]# ip link show | grep -v '^ ' | ./osfilter.py 
+	[osuser@folsom-controller openstack_helper]$ ip link show | grep -v '^ ' | ./osfilter.py 
 	1: lo: <LOOPBACK,UP,LOWER_UP> mtu 16436 qdisc noqueue state UNKNOWN 
 	2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP qlen 1000
 	3: eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP qlen 1000

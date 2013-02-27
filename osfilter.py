@@ -11,14 +11,15 @@ dbfile = "test.db"
 Tenants = {}
 Ports = {}
 
-conn_info = {
-    'keystone': {'user': 'keystone', 'password': 'keystone', 'host': 'controller.mgmt', 'db': 'keystone'},
-    'nova': {'user': 'nova', 'password': 'nova', 'host': 'controller.mgmt', 'db': 'nova'},
-    'quantum': {'user': 'quantum', 'password': 'quantum', 'host': 'controller.mgmt', 'db': 'ovs_quantum'}
+mysql_host = "controller.mgmt"
+sql_connection = {
+    "keystone": "mysql://keystone:keystone@%s/keystone" % mysql_host,
+    "nova": "mysql://nova:nova@%s/nova" % mysql_host,
+    "quantum": "mysql://quantum:quantum@%s/ovs_quantum" % mysql_host,
 }
 
 def rdbms_open(service):
-    engine = sqlalchemy.create_engine("mysql://%s:%s@%s/%s" % (conn_info[service]['user'], conn_info[service]['password'], conn_info[service]['host'], conn_info[service]['db']))
+    engine = sqlalchemy.create_engine(sql_connection[service])
     #engine.echo = True
     return engine
     
@@ -30,6 +31,11 @@ def rdbms_get_table(engine, table_name):
     metadata = sqlalchemy.MetaData(bind=engine)
     table = sqlalchemy.Table(table_name, metadata, autoload=True)
     return table
+
+def table_get_tmp(table):
+    sql = sqlalchemy.sql.select([table])
+    res = sql.execute()
+    return [x for x in res]
 
 def table_get_columns(table):
     return [x for x in table.columns.keys()]
@@ -72,7 +78,7 @@ def port_setup():
     global Networks
     for row in res:
         elem = {
-                    "tenant": Tenants[row[0]] if row[0] else "",
+                    "tenant": Tenants[row[0]] if row[0] else "None",
                     "port_id": row[1],
                     "network_id": row[2],
                     "network_name": row[3],
@@ -86,7 +92,7 @@ def port_setup():
     return dict
 
 def walk_all():
-    for service in conn_info.keys():
+    for service in sql_connection.keys():
         print "=>", service
         engine = rdbms_open(service)
         tables = rdbms_get_tables(engine)
@@ -95,7 +101,8 @@ def walk_all():
             table = rdbms_get_table(engine, table_name)
             array = table_get_columns(table)
             print array
-            print table_get_tmp(table)
+            #print table_get_tmp(table)
+            pprint(table_get_tmp(table))
 
 def filter():
     for line in sys.stdin:
