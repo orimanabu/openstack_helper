@@ -12,14 +12,13 @@ Tenants = {}
 Ports = {}
 
 conn_info = {
-    'keystone': {'user': 'keystone', 'password': 'keystone', 'host': 'localhost', 'db': 'keystone'},
-    'nova': {'user': 'nova', 'password': 'nova', 'host': 'localhost', 'db': 'nova'},
-    'quantum': {'user': 'quantum', 'password': 'quantum', 'host': 'localhost', 'db': 'ovs_quantum'}
+    'keystone': {'user': 'keystone', 'password': 'keystone', 'host': 'controller.mgmt', 'db': 'keystone'},
+    'nova': {'user': 'nova', 'password': 'nova', 'host': 'controller.mgmt', 'db': 'nova'},
+    'quantum': {'user': 'quantum', 'password': 'quantum', 'host': 'controller.mgmt', 'db': 'ovs_quantum'}
 }
 
 def rdbms_open(service):
-    engine = sqlalchemy.create_engine("mysql://%s:%s@%s/%s"
-                % (conn_info[service]['user'], conn_info[service]['password'], conn_info[service]['host'], conn_info[service]['db']))
+    engine = sqlalchemy.create_engine("mysql://%s:%s@%s/%s" % (conn_info[service]['user'], conn_info[service]['password'], conn_info[service]['host'], conn_info[service]['db']))
     #engine.echo = True
     return engine
     
@@ -101,10 +100,12 @@ def walk_all():
 def filter():
     for line in sys.stdin:
         line = re.sub(r"tap", "tap-", line)
+        line = re.sub(r"qbr", "qbr-", line)
+        line = re.sub(r"qvb", "qvb-", line)
+        line = re.sub(r"qvo", "qvo-", line)
         for port_id in Ports.keys():
             rx = port_id[0:11]
-            replace = "net:%s,ipaddr:%s,tenant:%s,owner:%s"
-                % (Ports[port_id]["network_name"], Ports[port_id]["ip_address"], Ports[port_id]["tenant"], Ports[port_id]["device_owner"])
+            replace = "net:%s,ipaddr:%s,tenant:%s,owner:%s" % (Ports[port_id]["network_name"], Ports[port_id]["ip_address"], Ports[port_id]["tenant"], Ports[port_id]["device_owner"])
             line = re.sub(rx, replace, line)
         print line,
 
